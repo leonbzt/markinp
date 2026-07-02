@@ -18,7 +18,7 @@ number. Codes are stable once released and never renumbered.
 | MK002 | E | A history's length differs from the file's occasion count | Give every history one character per occasion |
 | MK003 | E | A frequency value is not a number | Remove stray text; check for an accidental space |
 | MK004 | E | The number of frequency columns ≠ the number of groups | Provide exactly one frequency per group |
-| MK005 | E | A history contains a character illegal for the data type | Standard histories use only `0`/`1` |
+| MK005 | E | A history contains a non-`0`/`1` character when the file is (asserted) standard | Standard histories use only `0`/`1`; pass `--data-type` for other formats |
 | MK006 | E | The covariate count differs between records | Give every record the same number of covariates |
 | MK007 | E | A covariate is blank or non-numeric | Fill in a number; MARK covariates cannot be missing |
 | MK008 | E | The file has no encounter records | Add at least one history record ending in `;` |
@@ -34,7 +34,7 @@ number. Codes are stable once released and never renumbered.
 | MK018 | E | A known-fate / dead-recovery history has odd length | These histories are Live/Dead pairs (even length) |
 | MK019 | W | A declared group has all-zero frequencies | A group with no individuals is often a setup mistake |
 | MK020 | W | Unexpected encoding / BOM / non-UTF-8 bytes | Save the file as plain UTF-8 |
-| MK900 | I | A specialized format was detected | Only partially validated; full support is a later milestone |
+| MK900 | I | A specialized format was detected (multistrata, or a non-`0`/`1` alphabet such as occupancy/false-positive/robust-design) | Only partially validated; full support is a later milestone |
 
 ## How markinp infers structure
 
@@ -50,10 +50,17 @@ The number of occasions, groups, and covariates is usually **not** stored in an
   indistinguishable from a frequency, assert your true structure with
   `--groups` and `--covariates` when it matters.
 - **Data type.** Histories using only `0`/`1` are read as the standard
-  live-recapture format. Histories containing letters are read as multistrata
-  (raising `MK900`). Known-fate and dead-recovery cannot be told apart from the
-  bytes alone — assert them with `--data-type known_fate` /
-  `--data-type dead_recovery` to enable the Live/Dead pairing check (`MK018`).
+  live-recapture format. Histories containing letters are read as multistrata,
+  and histories using other non-standard characters (e.g. `.` for a not-surveyed
+  occasion, or `2` for a certain detection) are recognised as a specialised
+  format markinp does not yet fully support (occupancy, false-positive occupancy,
+  robust design, ...). In both cases markinp reports a single `MK900` and does
+  **not** flag the individual encounter characters, rather than drowning you in
+  per-character errors. If you know a file is standard and want strict `0`/`1`
+  checking, pass `--data-type live_recapture`. Known-fate and dead-recovery
+  cannot be told apart from the bytes alone — assert them with
+  `--data-type known_fate` / `--data-type dead_recovery` to enable the Live/Dead
+  pairing check (`MK018`).
 
 ## Tightening the checks
 

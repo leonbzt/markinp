@@ -1,7 +1,9 @@
 name: Release
 
-# Publishes to PyPI via Trusted Publishing (OIDC) when a version tag is pushed
-# or a GitHub Release is published. No API tokens are stored in the repo.
+# Publishes to PyPI via Trusted Publishing (OIDC) when a GitHub Release is
+# published. Releasing (rather than a bare tag push) is deliberate: it is also
+# what triggers the Zenodo archival webhook, so a single "publish release" action
+# does both PyPI upload and DOI minting. No API tokens are stored in the repo.
 #
 # One-time setup on PyPI: create the project's "pending publisher" pointing at
 #   owner:   leonbzt
@@ -10,10 +12,9 @@ name: Release
 #   environment: pypi
 
 on:
-  push:
-    tags: ["v*"]
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -55,3 +56,7 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Idempotent: re-publishing a release (e.g. to re-trigger Zenodo) will
+          # not fail if the version is already on PyPI.
+          skip-existing: true

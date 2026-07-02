@@ -38,7 +38,9 @@ def test_mk004_frequency_count() -> None:
 
 
 def test_mk005_illegal_history_char() -> None:
-    assert "MK005" in codes_for("illegal_history_char.inp")
+    # A non-0/1 character is only an "illegal character" once the file is
+    # asserted to be standard; by default a non-standard alphabet is MK900.
+    assert "MK005" in codes_for("illegal_history_char.inp", data_type=DataType.LIVE_RECAPTURE)
 
 
 def test_mk006_covariate_count() -> None:
@@ -104,6 +106,19 @@ def test_mk020_encoding_bom() -> None:
 
 def test_mk900_partial_support_multistrata() -> None:
     assert "MK900" in codes_for("multistrata.inp")
+
+
+def test_mk900_nonstandard_alphabet_by_default() -> None:
+    # An occupancy-style file with '.' is detected as a non-standard alphabet and
+    # reported once as MK900 rather than a flood of MK005 illegal-character errors.
+    codes = codes_for("nonstandard_alphabet.inp")
+    assert "MK900" in codes
+    assert "MK005" not in codes
+
+
+def test_nonstandard_alphabet_is_strict_when_asserted_standard() -> None:
+    codes = codes_for("nonstandard_alphabet.inp", data_type=DataType.LIVE_RECAPTURE)
+    assert "MK005" in codes
 
 
 # --- clean files stay clean ----------------------------------------------

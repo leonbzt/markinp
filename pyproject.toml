@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "markinp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Read, validate, and build Program MARK encounter-history (.inp) files."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -9,12 +9,12 @@ tags:
   - data validation
 authors:
   - name: Leon Botzenhardt
-    orcid: 0000-0000-0000-0000   # TODO: add your ORCID (free at https://orcid.org)
+    orcid: 0009-0002-8584-583X
     affiliation: 1
 affiliations:
-  - name: Independent researcher   # TODO: replace with your institution
+  - name: Ludwig-Maximilians-Universität München (LMU Munich), Germany
     index: 1
-date: 2 July 2026
+date: 3 July 2026
 bibliography: paper.bib
 ---
 

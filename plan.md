@@ -166,7 +166,7 @@ W=warning, I=info. `--strict` promotes W→E.
 | MK002 | E | History length differs between records | All histories must have one character per occasion; check line N |
 | MK003 | E | Non-numeric value in a frequency column | Frequencies must be whole numbers; check for stray text/space |
 | MK004 | E | Frequency-column count ≠ inferred/declared groups | Give one frequency per group; check for a missing or extra value |
-| MK005 | E | Illegal character in history for the data type | Standard histories use only `0`/`1`; check line N |
+| MK005 | E | Non-`0`/`1` char in history when the file is (asserted) standard | Standard histories use only `0`/`1`; pass `--data-type` for other formats |
 | MK006 | E | Covariate count differs between records | Every record needs the same number of covariates |
 | MK007 | E | Missing covariate value | Covariates cannot be blank in MARK; fill or remove the covariate |
 | MK008 | E | File has no encounter records | The file is empty or all comments; add data |
@@ -182,7 +182,7 @@ W=warning, I=info. `--strict` promotes W→E.
 | MK018 | E | Odd column count for LDLD pairing | (known-fate/recovery) histories must be in Live/Dead pairs |
 | MK019 | W | A declared group has all-zero frequencies | Group G has no individuals; check group setup |
 | MK020 | W | Unexpected encoding / BOM / non-ASCII | Save as UTF-8 or ASCII; a BOM/odd byte was found |
-| MK900 | I | Partial support: specialized format detected | Full validation of this format is not yet implemented |
+| MK900 | I | Partial support: specialized format detected (multistrata, or a non-`0`/`1` alphabet — occupancy/false-positive/robust-design) | Full validation of this format is not yet implemented |
 
 Add new codes here **before** implementing them.
 

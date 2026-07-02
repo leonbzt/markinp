@@ -6,7 +6,9 @@ authors:
   - family-names: Botzenhardt
     given-names: Leon
     email: leon.botzenhardt@gmail.com
-version: 0.1.0
+    orcid: "https://orcid.org/0009-0002-8584-583X"
+    affiliation: "Ludwig-Maximilians-Universität München (LMU Munich)"
+version: 0.2.0
 license: MIT
 repository-code: "https://github.com/leonbzt/markinp"
 keywords:

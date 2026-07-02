@@ -56,6 +56,9 @@ def validate(
 
     if dtype in SPECIALIZED_TYPES:
         diagnostics.append(dx.mk900_partial_support(dtype.value))
+    elif dtype == DataType.UNKNOWN:
+        unexpected = sorted({c for r in dataset.records for c in r.history if c not in {"0", "1"}})
+        diagnostics.append(dx.mk900_nonstandard_alphabet(unexpected))
 
     for record in dataset.records:
         diagnostics.extend(_check_history_chars(record, dtype))
@@ -72,7 +75,14 @@ def validate(
 
 
 def _check_history_chars(record: EncounterHistory, dtype: DataType) -> list[Diagnostic]:
-    """Flag characters illegal for the data type (MK005 / MK017)."""
+    """Flag characters illegal for the data type (MK005 / MK017).
+
+    For an inferred non-standard alphabet (``UNKNOWN``) we do not know the legal
+    character set, so we skip per-character checks entirely; the single MK900 on
+    the file already reports the situation honestly.
+    """
+    if dtype == DataType.UNKNOWN:
+        return []
     diagnostics: list[Diagnostic] = []
     seen: set[str] = set()
     for char in record.history:

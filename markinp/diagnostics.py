@@ -224,3 +224,16 @@ def mk900_partial_support(data_type: str) -> Diagnostic:
         "implemented; treat a clean result with caution",
         None,
     )
+
+
+def mk900_nonstandard_alphabet(chars: list[str]) -> Diagnostic:
+    shown = ", ".join(repr(c) for c in chars)
+    return _info(
+        "MK900",
+        f"histories use characters beyond the standard 0/1 (found: {shown})",
+        "This looks like a specialised format (e.g. occupancy, false-positive, or "
+        "robust design) that markinp only checks structurally; the encounter "
+        "characters are not validated. Pass --data-type live_recapture to enforce "
+        "strict 0/1 checking instead",
+        None,
+    )

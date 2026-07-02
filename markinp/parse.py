@@ -174,16 +174,28 @@ def _parse_record(
 def infer_data_type(records: list[EncounterHistory]) -> DataType:
     """Guess the data type from history characters alone.
 
-    Only the standard 0/1 case and the presence of stratum letters are
-    distinguishable from content; known-fate vs. dead-recovery vs. closed
-    captures require the user to assert ``--data-type``.
+    - Histories using only ``0``/``1`` are read as the standard live-recapture
+      format.
+    - Histories containing letters are read as multistrata.
+    - Histories using other non-standard characters (e.g. ``.`` for a
+      not-surveyed occasion, or ``2`` for a certain detection) belong to a
+      specialised format markinp does not fully support (occupancy,
+      false-positive occupancy, robust design, ...); these are reported as
+      ``UNKNOWN`` so validation can flag them honestly rather than drowning the
+      user in per-character errors.
+
+    Known-fate vs. dead-recovery vs. closed captures cannot be distinguished from
+    content and require the user to assert ``--data-type``.
     """
     chars: set[str] = set()
     for record in records:
         chars.update(record.history)
-    if chars - {"0", "1"} & _ASCII_LETTERS:
+    nonstandard = chars - {"0", "1"}
+    if not nonstandard:
+        return DataType.LIVE_RECAPTURE
+    if nonstandard & _ASCII_LETTERS:
         return DataType.MULTISTRATA
-    return DataType.LIVE_RECAPTURE
+    return DataType.UNKNOWN
 
 
 def infer_occasions(records: list[EncounterHistory]) -> int:
