@@ -1,0 +1,22 @@
+{
+  "title": "markinp: read, validate, and build Program MARK encounter-history (.inp) files",
+  "description": "markinp is an independent, unofficial command-line utility and Python library for reading, validating, and building Program MARK encounter-history (.inp) files. It performs file I/O and validation only and does not fit models or compute statistics. It is not affiliated with or endorsed by the authors of Program MARK or RMark.",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Botzenhardt, Leon",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "keywords": [
+    "capture-recapture",
+    "mark-recapture",
+    "Program MARK",
+    "encounter history",
+    "ecology",
+    "wildlife",
+    "data validation"
+  ]
+}

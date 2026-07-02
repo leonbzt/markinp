@@ -1,0 +1,50 @@
+site_name: markinp
+site_description: Read, validate, and build Program MARK encounter-history (.inp) files.
+site_url: https://leonbzt.github.io/markinp/
+repo_url: https://github.com/leonbzt/markinp
+repo_name: leonbzt/markinp
+copyright: MIT licensed. An independent, unofficial utility — not affiliated with Program MARK or RMark.
+
+theme:
+  name: material
+  icon:
+    logo: material/check-decagram
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+
+nav:
+  - Home: index.md
+  - The .inp format: format.md
+  - CLI reference: cli.md
+  - Error codes: error-codes.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - tables
+
+# Outreach drafts live under docs/ for convenience but are not published.
+exclude_docs: |
+  announcements/
