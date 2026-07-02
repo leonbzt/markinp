@@ -1,11 +1,9 @@
 {% set name = "markinp" %}
 {% set version = "0.1.0" %}
 
-# Bioconda recipe for markinp.
-# To submit: copy this file to bioconda-recipes/recipes/markinp/meta.yaml and
-# open a PR. Confirm the sha256 matches the sdist actually published on PyPI
-# (the "Download files" page, or `openssl sha256 markinp-0.1.0.tar.gz`);
-# bioconda CI will fail loudly if it does not.
+# Bioconda recipe for markinp. To submit, copy this file to
+# bioconda-recipes/recipes/markinp/meta.yaml and open a PR. The sha256 below is
+# the sha256 of the sdist published on PyPI for this version.
 
 package:
   name: {{ name|lower }}
@@ -13,14 +11,12 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9c3415d13ca89bdf00612ad939d0765d86ed3fef3b9d28938130d8c6517560e4
+  sha256: 9a0fc05c99a9f68d998e280b0ab92a9495ecd7ec2cceb146139ef624e96d8e3a
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  entry_points:
-    - markinp = markinp.cli:app
 
 requirements:
   host:
@@ -35,8 +31,11 @@ test:
   imports:
     - markinp
   commands:
+    - pip check
     - markinp --help
     - markinp --version
+  requires:
+    - pip
 
 about:
   home: https://github.com/leonbzt/markinp
