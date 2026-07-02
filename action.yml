@@ -1,0 +1,50 @@
+name: "markinp validate"
+description: "Validate Program MARK encounter-history (.inp) files and fail CI on errors."
+author: "Leon Botzenhardt"
+branding:
+  icon: "check-circle"
+  color: "green"
+
+inputs:
+  files:
+    description: "Space-separated globs/paths of .inp files to validate."
+    required: false
+    default: "**/*.inp"
+  args:
+    description: "Extra flags passed to `markinp validate` (e.g. --strict --json)."
+    required: false
+    default: ""
+  version:
+    description: "Version of markinp to install (default: latest)."
+    required: false
+    default: ""
+  python-version:
+    description: "Python version to use."
+    required: false
+    default: "3.x"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install markinp
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.version }}" ]; then
+          python -m pip install "markinp==${{ inputs.version }}"
+        else
+          python -m pip install markinp
+        fi
+    - name: Validate .inp files
+      shell: bash
+      run: |
+        shopt -s globstar nullglob
+        matches=( ${{ inputs.files }} )
+        if [ ${#matches[@]} -eq 0 ]; then
+          echo "markinp: no files matched '${{ inputs.files }}' — nothing to validate."
+          exit 0
+        fi
+        echo "markinp: validating ${#matches[@]} file(s)."
+        markinp validate "${matches[@]}" ${{ inputs.args }}

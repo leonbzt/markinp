@@ -1,0 +1,7 @@
+- id: markinp-validate
+  name: markinp validate
+  description: "Validate Program MARK encounter-history (.inp) files."
+  entry: markinp validate
+  language: python
+  files: '\.inp$'
+  types: [file]

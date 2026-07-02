@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "markinp"
+version = "0.1.0"
+description = "Read, validate, and build Program MARK encounter-history (.inp) files."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Leon Botzenhardt", email = "leon.botzenhardt@gmail.com" }]
+keywords = [
+    "mark",
+    "capture-recapture",
+    "mark-recapture",
+    "ecology",
+    "encounter-history",
+    "inp",
+    "rmark",
+    "wildlife",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = ["typer>=0.9"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.5",
+    "mypy>=1.8",
+    "hypothesis>=6.0",
+]
+
+[project.scripts]
+markinp = "markinp.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/leonbzt/markinp"
+Repository = "https://github.com/leonbzt/markinp"
+Issues = "https://github.com/leonbzt/markinp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["markinp"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["markinp"]
+
+[[tool.mypy.overrides]]
+module = "markinp.cli"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

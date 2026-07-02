@@ -1,0 +1,57 @@
+{% set name = "markinp" %}
+{% set version = "0.1.0" %}
+
+# Bioconda recipe for markinp.
+# To submit: copy this file to bioconda-recipes/recipes/markinp/meta.yaml and
+# open a PR. Confirm the sha256 matches the sdist actually published on PyPI
+# (the "Download files" page, or `openssl sha256 markinp-0.1.0.tar.gz`);
+# bioconda CI will fail loudly if it does not.
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9c3415d13ca89bdf00612ad939d0765d86ed3fef3b9d28938130d8c6517560e4
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - markinp = markinp.cli:app
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - typer >=0.9
+
+test:
+  imports:
+    - markinp
+  commands:
+    - markinp --help
+    - markinp --version
+
+about:
+  home: https://github.com/leonbzt/markinp
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Read, validate, and build Program MARK encounter-history (.inp) files."
+  description: |
+    markinp is an independent, unofficial command-line utility and Python
+    library for reading, validating, and building Program MARK encounter-history
+    (.inp) files. It performs file I/O and validation only and does not fit
+    models or compute statistics. It is not affiliated with or endorsed by the
+    authors of Program MARK or RMark.
+  dev_url: https://github.com/leonbzt/markinp
+
+extra:
+  recipe-maintainers:
+    - leonbzt

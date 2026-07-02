@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use markinp, please cite it as below."
+title: "markinp: read, validate, and build Program MARK encounter-history (.inp) files"
+type: software
+authors:
+  - family-names: Botzenhardt
+    given-names: Leon
+    email: leon.botzenhardt@gmail.com
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/leonbzt/markinp"
+keywords:
+  - capture-recapture
+  - mark-recapture
+  - Program MARK
+  - encounter history
+  - ecology
+abstract: >-
+  markinp is an independent, unofficial command-line utility and Python library
+  for reading, validating, and building Program MARK encounter-history (.inp)
+  files. It performs file I/O and validation only and does not fit models or
+  compute statistics. It is not affiliated with or endorsed by the authors of
+  Program MARK or RMark.
