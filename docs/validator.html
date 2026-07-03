@@ -150,6 +150,12 @@
 
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
 <script>
+// markinp wheel to install into Pyodide. The local copy is served from the same
+// origin as this page (no CORS, no PyPI-API dependency); the pythonhosted URL is
+// a fallback. On each release, bump BOTH lines to the new version's wheel.
+const WHEEL_FILE = "markinp-0.2.0-py3-none-any.whl";
+const PYPI_WHEEL = "https://files.pythonhosted.org/packages/f5/06/1c7f3f66d7c7efa25f2c08766a16e060a0d6456d4d9fcfa1ee365342706f/markinp-0.2.0-py3-none-any.whl";
+
 const PY_GLUE = `
 import json
 from markinp.parse import parse_text
@@ -186,8 +192,15 @@ async function boot() {
     pyodide = await loadPyodide();
     setStatus("Installing markinp…", true);
     await pyodide.loadPackage("micropip");
+    // Prefer the same-origin wheel (avoids CORS/preflight issues that break
+    // micropip's PyPI-name resolution in the browser); fall back to pythonhosted.
+    const localWheel = new URL(WHEEL_FILE, document.baseURI).href;
     await pyodide.runPythonAsync(
-      "import micropip\nawait micropip.install('markinp', deps=False)"
+      "import micropip\n" +
+      "try:\n" +
+      "    await micropip.install(" + JSON.stringify(localWheel) + ", deps=False)\n" +
+      "except Exception:\n" +
+      "    await micropip.install(" + JSON.stringify(PYPI_WHEEL) + ", deps=False)\n"
     );
     pyodide.runPython(PY_GLUE);
     setStatus("Ready. ✅", false);
