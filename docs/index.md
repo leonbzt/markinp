@@ -14,11 +14,16 @@ get a precise, line-numbered diagnosis in about a second.
     with or endorsed by the authors of Program MARK or RMark. It does **file I/O
     and validation only** — it never fits models or computes statistics.
 
+!!! tip "Try it in your browser — no install"
+    **[Open the web validator →](validator.html)** Paste or drop an `.inp` file and
+    get the same line-numbered diagnostics, running **entirely in your browser**
+    (your data never leaves your device).
+
 ## Install
 
 ```bash
 pip install markinp
-# or, once the Bioconda recipe is merged:
+# or:
 conda install -c bioconda markinp
 ```
 

@@ -56,7 +56,13 @@ programmers. **UX and error-message quality are the product**, not an add-on.
 8. **Respect the spec exactly.** When unsure about the `.inp` format, consult
    Chapter 2 of the MARK "Gentle Introduction" book (the field's canonical
    reference) and encode the rule as a test rather than guessing.
-9. **No GUI.** Command line and library only.
+9. **No native GUI app; no server backend.** The command line and library are
+   the primary interfaces. A browser-based validator is permitted **only** as a
+   thin, client-side presentation layer over the same library (compiled to WASM
+   via Pyodide): it must add no validation logic of its own, run entirely in the
+   user's browser, and send no data to any server. It reuses `parse`/`validate`/
+   `report` unchanged — if the web tool needs logic the library lacks, that logic
+   belongs in the library, not the page.
 
 ---
 
@@ -238,7 +244,9 @@ class Diagnostic:
 - Do not add a dependency for convenience; justify every one in `plan.md`.
 - Do not claim full validation of known-fate / dead-recovery / multistrata
   until those milestones land; emit an honest "partial support" diagnostic.
-- Do not build a GUI or a web app.
+- Do not build a native GUI app or a server backend. (A client-side, in-browser
+  validator that merely calls the library — no server, no new logic — is allowed;
+  see rule 9.)
 
 ---
 

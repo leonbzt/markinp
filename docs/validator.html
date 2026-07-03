@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>markinp — validate a MARK .inp file in your browser</title>
+<meta name="description" content="Validate Program MARK encounter-history (.inp) files in your browser. Runs entirely client-side — your data never leaves your device." />
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1b1f23; --muted: #5b6570; --card: #f6f8fa;
+    --border: #e1e4e8; --accent: #00897b; --accent-fg: #ffffff;
+    --error: #b3261e; --error-bg: #fdecea; --warn: #8a6d00; --warn-bg: #fff8e1;
+    --info: #0b6bcb; --info-bg: #e9f2fd; --pass: #1a7f37; --pass-bg: #e7f6ec;
+    --code: #0a3069;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --fg: #e6edf3; --muted: #9aa5b1; --card: #161b22;
+      --border: #30363d; --accent: #2dd4bf; --accent-fg: #06231f;
+      --error: #ff7b72; --error-bg: #2a1615; --warn: #e3b341; --warn-bg: #2a2413;
+      --info: #79c0ff; --info-bg: #12233a; --pass: #56d364; --pass-bg: #12251a;
+      --code: #a5d6ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 1.5rem 1.1rem 4rem; }
+  header h1 { margin: 0 0 .2rem; font-size: 1.7rem; }
+  header h1 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .tagline { color: var(--muted); margin: 0 0 .3rem; }
+  .privacy { display: inline-block; font-size: .82rem; color: var(--pass);
+    background: var(--pass-bg); border: 1px solid var(--border); border-radius: 999px;
+    padding: .15rem .7rem; margin-top: .3rem; }
+  a { color: var(--accent); }
+  textarea {
+    width: 100%; min-height: 190px; resize: vertical; margin-top: .3rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px; line-height: 1.5; color: var(--fg); background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem;
+  }
+  textarea.drag { border-color: var(--accent); border-style: dashed; }
+  .row { display: flex; flex-wrap: wrap; gap: .8rem 1.1rem; align-items: center; margin: .8rem 0; }
+  .row label { font-size: .9rem; color: var(--muted); display: inline-flex; align-items: center; gap: .35rem; }
+  input[type="number"], select {
+    font: inherit; font-size: .9rem; color: var(--fg); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 7px; padding: .25rem .4rem; width: 5.2rem;
+  }
+  select { width: auto; }
+  details { margin: .3rem 0 .6rem; }
+  summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+  .actions { display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer; border: 0; border-radius: 9px;
+    padding: .6rem 1.3rem; background: var(--accent); color: var(--accent-fg);
+  }
+  button:disabled { opacity: .55; cursor: default; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+  #status { color: var(--muted); font-size: .9rem; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite;
+    vertical-align: -2px; margin-right: .4rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #results { margin-top: 1.4rem; }
+  .banner { border-radius: 10px; padding: .7rem 1rem; font-weight: 600; margin-bottom: 1rem;
+    border: 1px solid var(--border); }
+  .banner.pass { background: var(--pass-bg); color: var(--pass); }
+  .banner.fail { background: var(--error-bg); color: var(--error); }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.1rem; }
+  .chip { font-size: .82rem; background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: .2rem .7rem; }
+  .chip b { color: var(--fg); }
+  .diag { border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px;
+    padding: .6rem .8rem; margin-bottom: .6rem; background: var(--card); }
+  .diag.ERROR { border-left-color: var(--error); }
+  .diag.WARNING { border-left-color: var(--warn); }
+  .diag.INFO { border-left-color: var(--info); }
+  .diag .top { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; }
+  .sev { font-size: .72rem; font-weight: 700; letter-spacing: .04em; padding: .05rem .45rem;
+    border-radius: 5px; }
+  .sev.ERROR { color: var(--error); background: var(--error-bg); }
+  .sev.WARNING { color: var(--warn); background: var(--warn-bg); }
+  .sev.INFO { color: var(--info); background: var(--info-bg); }
+  .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; color: var(--code); }
+  .loc { color: var(--muted); font-size: .88rem; }
+  .msg { margin: .15rem 0 0; }
+  .hint { color: var(--muted); font-size: .9rem; margin-top: .2rem; }
+  .hint::before { content: "→ "; }
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="mono">markinp</span> · validate a MARK <span class="mono">.inp</span> file</h1>
+    <p class="tagline">Precise, line-numbered diagnostics for Program MARK encounter-history files.</p>
+    <span class="privacy">🔒 Runs entirely in your browser — your data never leaves your device.</span>
+  </header>
+
+  <main>
+    <label for="inp"><strong>Paste your <span class="mono">.inp</span> file</strong>, or drop a file below:</label>
+    <textarea id="inp" spellcheck="false" aria-label="INP file contents">/* ind 001 */ 1001 1;
+/* ind 002 */ 1101 1
+0101 2;</textarea>
+
+    <div class="row">
+      <label><input type="checkbox" id="strict" /> strict (warnings → errors)</label>
+      <input type="file" id="file" accept=".inp,.txt,text/plain" aria-label="Choose an .inp file" />
+    </div>
+
+    <details>
+      <summary>Advanced: assert the expected structure</summary>
+      <div class="row">
+        <label>occasions <input type="number" id="occasions" min="1" placeholder="auto" /></label>
+        <label>groups <input type="number" id="groups" min="1" placeholder="auto" /></label>
+        <label>covariates <input type="number" id="covariates" min="0" placeholder="auto" /></label>
+        <label>data type
+          <select id="data_type">
+            <option value="">auto</option>
+            <option value="live_recapture">live_recapture</option>
+            <option value="closed_captures">closed_captures</option>
+            <option value="known_fate">known_fate</option>
+            <option value="dead_recovery">dead_recovery</option>
+            <option value="multistrata">multistrata</option>
+          </select>
+        </label>
+      </div>
+    </details>
+
+    <div class="actions">
+      <button id="run" disabled>Validate</button>
+      <button id="clear" class="secondary" type="button">Clear</button>
+      <span id="status"><span class="spinner"></span>Loading the validator…</span>
+    </div>
+
+    <section id="results" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    <p><strong>markinp</strong> is an independent, unofficial utility — not affiliated with the authors of
+    Program MARK or RMark. It does file I/O and validation only; it never fits models or computes statistics.
+    Standard 0/1 histories are fully validated; specialised formats are detected and only partially checked.</p>
+    <p><a href="./">Docs</a> · <a href="https://github.com/leonbzt/markinp">GitHub</a> ·
+    <a href="https://pypi.org/project/markinp/">PyPI</a> — prefer the command line? <code>pip install markinp</code></p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
+<script>
+const PY_GLUE = `
+import json
+from markinp.parse import parse_text
+from markinp.validate import validate
+from markinp.report import validate_payload
+from markinp.model import DataType
+
+def run_validation(text, strict, groups, occasions, covariates, data_type):
+    result = parse_text(text)
+    dt = DataType(data_type) if data_type else None
+    diags = result.diagnostics + validate(
+        result.dataset,
+        groups=groups if groups else None,
+        occasions=occasions if occasions else None,
+        covariates=covariates if covariates else None,
+        data_type=dt,
+    )
+    diags.sort(key=lambda d: (d.line if d.line is not None else -1, d.code))
+    payload = validate_payload(result.dataset, diags, strict=bool(strict), path="input.inp")
+    return json.dumps(payload)
+`;
+
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status"), runBtn = $("run"), resultsEl = $("results");
+let pyodide = null;
+
+function setStatus(html, spinning) {
+  statusEl.innerHTML = (spinning ? '<span class="spinner"></span>' : "") + html;
+}
+
+async function boot() {
+  try {
+    setStatus("Loading Python runtime…", true);
+    pyodide = await loadPyodide();
+    setStatus("Installing markinp…", true);
+    await pyodide.loadPackage("micropip");
+    await pyodide.runPythonAsync(
+      "import micropip\nawait micropip.install('markinp', deps=False)"
+    );
+    pyodide.runPython(PY_GLUE);
+    setStatus("Ready. ✅", false);
+    runBtn.disabled = false;
+  } catch (err) {
+    setStatus("", false);
+    resultsEl.innerHTML =
+      '<div class="banner fail">Could not load the in-browser validator: ' +
+      escapeHtml(String(err)) +
+      '<br>You can still use the command line: <code>pip install markinp</code></div>';
+  }
+}
+
+function numOrNull(id) {
+  const v = $(id).value.trim();
+  return v === "" ? null : Number(v);
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function render(payload) {
+  const s = payload.summary;
+  const verdict = payload.ok
+    ? '<div class="banner pass">PASS — no errors found.</div>'
+    : '<div class="banner fail">FAIL — ' + s.errors + " error" + (s.errors === 1 ? "" : "s") + " found.</div>";
+  const chips =
+    '<div class="chips">' +
+    chip("occasions", s.n_occasions) + chip("groups", s.n_groups) +
+    chip("covariates", s.n_covariates) + chip("records", s.n_records) +
+    chip("individuals", s.n_individuals) + chip("data type", s.data_type) +
+    chip("errors", s.errors) + chip("warnings", s.warnings) + chip("info", s.infos) +
+    "</div>";
+  let list = "";
+  if (payload.diagnostics.length === 0) {
+    list = '<p class="hint" style="margin-left:0">No diagnostics — this file looks clean.</p>';
+  } else {
+    for (const d of payload.diagnostics) {
+      const loc = d.line != null ? '<span class="loc">line ' + d.line + "</span>" : "";
+      list +=
+        '<div class="diag ' + d.severity + '"><div class="top">' +
+        '<span class="sev ' + d.severity + '">' + d.severity + "</span>" +
+        '<span class="code">' + d.code + "</span>" + loc + "</div>" +
+        '<p class="msg">' + escapeHtml(d.message) + "</p>" +
+        '<p class="hint">' + escapeHtml(d.hint) + "</p></div>";
+    }
+  }
+  resultsEl.innerHTML = verdict + chips + list;
+}
+function chip(label, val) {
+  return '<span class="chip">' + label + ": <b>" + escapeHtml(String(val)) + "</b></span>";
+}
+
+async function validate() {
+  if (!pyodide) return;
+  runBtn.disabled = true;
+  setStatus("Validating…", true);
+  try {
+    const fn = pyodide.globals.get("run_validation");
+    const out = fn(
+      $("inp").value, $("strict").checked,
+      numOrNull("groups"), numOrNull("occasions"), numOrNull("covariates"),
+      $("data_type").value
+    );
+    fn.destroy();
+    render(JSON.parse(out));
+    setStatus("Ready. ✅", false);
+  } catch (err) {
+    resultsEl.innerHTML = '<div class="banner fail">Error: ' + escapeHtml(String(err)) + "</div>";
+    setStatus("Ready. ✅", false);
+  } finally {
+    runBtn.disabled = false;
+  }
+}
+
+// --- wiring ---
+runBtn.addEventListener("click", validate);
+$("clear").addEventListener("click", () => { $("inp").value = ""; resultsEl.innerHTML = ""; });
+$("file").addEventListener("change", (e) => {
+  const f = e.target.files[0];
+  if (f) f.text().then((t) => { $("inp").value = t; });
+});
+const ta = $("inp");
+["dragover", "dragenter"].forEach((ev) =>
+  ta.addEventListener(ev, (e) => { e.preventDefault(); ta.classList.add("drag"); }));
+["dragleave", "drop"].forEach((ev) =>
+  ta.addEventListener(ev, () => ta.classList.remove("drag")));
+ta.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f) f.text().then((t) => { $("inp").value = t; });
+});
+
+boot();
+</script>
+</body>
+</html>

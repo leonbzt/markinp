@@ -29,6 +29,9 @@ It does three things and nothing more:
 > **Note on the name.** The command and PyPI package are `markinp` (the name
 > `markio` was already taken on PyPI).
 
+🌐 **No install? [Validate an `.inp` file in your browser](https://leonbzt.github.io/markinp/validator.html)** —
+runs entirely client-side; your data never leaves your device.
+
 ---
 
 ## Install

@@ -257,16 +257,22 @@ Add new codes here **before** implementing them.
 
 ## 10. Roadmap beyond v0
 
+- **Shipped (v0.2+) — In-browser validator.** A client-side page
+  (`docs/validator.html`) that runs the library in the browser via Pyodide/WASM.
+  Zero install, no server, data stays on the user's device. Reuses
+  `parse`/`validate`/`report` unchanged (see CLAUDE.md rule 9).
+- **v0.3 (short–mid term, prioritized) — Occupancy.** First-class support for the
+  occupancy / detection-history format used by the `unmarked` (R) and PRESENCE
+  community — a larger and faster-growing audience than pure capture-recapture
+  (driven by camera traps, eDNA, bioacoustics). Detect `.` (not-surveyed) and
+  multi-state detections, validate structurally, and build from a tidy CSV. This
+  is a committed direction, not a "maybe".
 - **v1 — Output tidier.** Parse MARK results into tidy tables (real/beta
-  estimates, model list, AICc). This is higher-uncertainty parsing work; scope
-  it separately after v0 proves the approach.
+  estimates, model list, AICc). Higher-uncertainty parsing; scope after v0.
 - **v1 — `convert`.** Round-trip `.inp` ⇄ tidy CSV, including an RMark-style
-  dataframe export (mirrors what RMark's `convert.inp` does, but no R needed
-  and in both directions).
-- **v2 — Specialized formats.** Full known-fate (LDLD), dead-recovery
-  (Brownie), and multistrata support, promoting MK900 detections to full checks.
-- **v2 — Occupancy.** Consider a sibling reader/validator for the PRESENCE
-  detection-history format (same community, same class of pain).
+  dataframe export (mirrors RMark's `convert.inp`, no R needed, both directions).
+- **v2 — Specialized formats.** Full known-fate (LDLD), dead-recovery (Brownie),
+  and multistrata support, promoting MK900 detections to full checks.
 
 ---
 
