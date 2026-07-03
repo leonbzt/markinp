@@ -5,7 +5,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/markinp.svg)](https://pypi.org/project/markinp/)
 [![Docs](https://img.shields.io/badge/docs-mkdocs--material-blue.svg)](https://leonbzt.github.io/markinp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21145091.svg)](https://doi.org/10.5281/zenodo.21145091)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21145090.svg)](https://doi.org/10.5281/zenodo.21145090)
 
 **Read, validate, and build Program MARK encounter-history (`.inp`) files —
 with error messages that actually tell you what to fix.**
@@ -215,7 +215,7 @@ resolves to the latest version; see [`CITATION.cff`](CITATION.cff) for full
 metadata (and the version-specific DOI).
 
 > Botzenhardt, L. *markinp: read, validate, and build Program MARK
-> encounter-history (.inp) files*. https://doi.org/10.5281/zenodo.21145091
+> encounter-history (.inp) files*. https://doi.org/10.5281/zenodo.21145090
 
 ## License
 
