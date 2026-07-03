@@ -3,7 +3,9 @@
 [![CI](https://github.com/leonbzt/markinp/actions/workflows/ci.yml/badge.svg)](https://github.com/leonbzt/markinp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/markinp.svg)](https://pypi.org/project/markinp/)
 [![Python versions](https://img.shields.io/pypi/pyversions/markinp.svg)](https://pypi.org/project/markinp/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-blue.svg)](https://leonbzt.github.io/markinp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21145091.svg)](https://doi.org/10.5281/zenodo.21145091)
 
 **Read, validate, and build Program MARK encounter-history (`.inp`) files —
 with error messages that actually tell you what to fix.**
@@ -205,6 +207,15 @@ of this repository (licensing), but is handy as a regression corpus — running
 change against a wide variety of real files. Note that occupancy, false-positive,
 robust-design, and multistrata files are outside v0's standard-format scope and
 will be flagged accordingly (see [`docs/error-codes.md`](docs/error-codes.md)).
+
+## Citation
+
+If markinp helps your work, please cite it. The concept DOI below always
+resolves to the latest version; see [`CITATION.cff`](CITATION.cff) for full
+metadata (and the version-specific DOI).
+
+> Botzenhardt, L. *markinp: read, validate, and build Program MARK
+> encounter-history (.inp) files*. https://doi.org/10.5281/zenodo.21145091
 
 ## License
 
