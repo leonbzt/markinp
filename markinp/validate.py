@@ -22,6 +22,8 @@ from .tokens import is_float_token, is_int_token
 _STANDARD_TYPES = frozenset({DataType.LIVE_RECAPTURE, DataType.CLOSED_CAPTURES})
 _LDLD_TYPES = frozenset({DataType.KNOWN_FATE, DataType.DEAD_RECOVERY})
 _STRATUM_LEGAL = frozenset("0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+#: Occupancy histories use 0/1 plus '.' for an occasion that was not surveyed.
+_OCCUPANCY_LEGAL = frozenset({"0", "1", "."})
 
 
 def validate(
@@ -65,7 +67,8 @@ def validate(
         diagnostics.extend(_check_history_length(record, n_occ, occasions is not None))
         diagnostics.extend(_check_ldld(record, dtype))
         diagnostics.extend(_check_columns_and_values(record, n_grp, n_cov))
-        diagnostics.extend(_check_all_zero(record))
+        diagnostics.extend(_check_all_zero(record, dtype))
+        diagnostics.extend(_check_all_missing(record, dtype))
 
     diagnostics.extend(_check_empty_groups(dataset.records, n_grp, dataset.group_labels))
     diagnostics.extend(_check_duplicates(dataset.records))
@@ -92,6 +95,9 @@ def _check_history_chars(record: EncounterHistory, dtype: DataType) -> list[Diag
         if dtype == DataType.MULTISTRATA:
             if char not in _STRATUM_LEGAL:
                 diagnostics.append(dx.mk017_illegal_stratum(record.line, char))
+        elif dtype == DataType.OCCUPANCY:
+            if char not in _OCCUPANCY_LEGAL:
+                diagnostics.append(dx.mk005_illegal_history_char(record.line, char))
         elif char not in {"0", "1"}:
             diagnostics.append(dx.mk005_illegal_history_char(record.line, char))
     return diagnostics
@@ -162,10 +168,24 @@ def _check_covariate(line: int, tok: str) -> list[Diagnostic]:
     return [dx.mk007_missing_covariate(line, tok)]
 
 
-def _check_all_zero(record: EncounterHistory) -> list[Diagnostic]:
-    """Flag an all-zero history (never encountered) as a warning (MK011)."""
+def _check_all_zero(record: EncounterHistory, dtype: DataType) -> list[Diagnostic]:
+    """Flag an all-zero history (never encountered) as a warning (MK011).
+
+    In occupancy data an all-zero history is *expected and informative* — a site
+    that was surveyed but where the species was never detected — so it is not
+    flagged.
+    """
+    if dtype == DataType.OCCUPANCY:
+        return []
     if record.history and set(record.history) == {"0"}:
         return [dx.mk011_all_zero_history(record.line)]
+    return []
+
+
+def _check_all_missing(record: EncounterHistory, dtype: DataType) -> list[Diagnostic]:
+    """Flag an occupancy history of only not-surveyed occasions (MK021)."""
+    if dtype == DataType.OCCUPANCY and record.history and set(record.history) == {"."}:
+        return [dx.mk021_all_missing_history(record.line)]
     return []
 
 

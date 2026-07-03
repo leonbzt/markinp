@@ -28,13 +28,15 @@ class Severity(Enum):
 class DataType(Enum):
     """The MARK data type a file appears to use.
 
-    Only ``LIVE_RECAPTURE`` / ``CLOSED_CAPTURES`` (the standard 0/1 format) are
-    fully validated in v0. The specialized types are detected and structurally
+    ``LIVE_RECAPTURE`` / ``CLOSED_CAPTURES`` (the standard 0/1 format) and
+    ``OCCUPANCY`` (0/1 with ``.`` for a not-surveyed occasion) are fully
+    validated. The remaining specialized types are detected and structurally
     checked only (see diagnostic ``MK900``).
     """
 
     LIVE_RECAPTURE = "live_recapture"
     CLOSED_CAPTURES = "closed_captures"
+    OCCUPANCY = "occupancy"
     KNOWN_FATE = "known_fate"
     DEAD_RECOVERY = "dead_recovery"
     MULTISTRATA = "multistrata"

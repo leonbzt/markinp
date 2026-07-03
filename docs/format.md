@@ -58,6 +58,30 @@ markinp validate captures.inp --occasions 4 --groups 2 --covariates 1
     Because a whole-number covariate looks exactly like a frequency, assert your
     structure with `--groups`/`--covariates` when it matters.
 
+## Occupancy files (`0`/`1`/`.`)
+
+In the occupancy / detection-history format (MARK, `unmarked`, PRESENCE), each
+history character is a **survey occasion** and a period `.` marks an occasion
+that was **not surveyed** — a missing value that does not enter the model:
+
+```
+/* site 1 */ 10.1 1;   /* detected, not detected, not surveyed, detected */
+/* site 2 */ 0000 2;   /* surveyed 4× and never detected — valid, informative */
+```
+
+`markinp` recognises this format automatically (from the `.` character), fully
+validates it, and treats an all-zero site as real data (no warning). It also
+**builds** occupancy files from a tidy site × survey CSV, mapping a blank/`NA`
+survey cell to `.` rather than to `0`:
+
+```bash
+markinp build sites.csv -o out.inp --data-type occupancy \
+    --id-col site --occasion-col survey --detect-col detected
+```
+
+See [Occupancy / detection-history files](error-codes.md#occupancy--detection-history-files)
+for the full rules.
+
 ## Encoding and line endings
 
 MARK is a Windows-origin tool and input often comes from Excel, so files are

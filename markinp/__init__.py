@@ -25,7 +25,7 @@ from .parse import ParseResult, parse_file, parse_text
 from .validate import validate
 from .write import write_file, write_text
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "BuildOptions",

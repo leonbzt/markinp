@@ -70,6 +70,18 @@ def test_infers_multistrata_from_letters() -> None:
     assert result.dataset.data_type == DataType.MULTISTRATA
 
 
+def test_infers_occupancy_from_dot() -> None:
+    result = parse_file(FIXTURES / "occupancy.inp")
+    assert result.dataset.data_type == DataType.OCCUPANCY
+    assert result.dataset.n_occasions == 4
+
+
+def test_dot_plus_letters_is_not_occupancy() -> None:
+    # Letters dominate: a '.' alongside stratum letters stays multistrata.
+    result = parse_text("A0.B 1;\nB1.A 1;\n")
+    assert result.dataset.data_type == DataType.MULTISTRATA
+
+
 @pytest.mark.parametrize("name", VALID_FILES)
 def test_valid_fixtures_parse_without_parse_errors(name: str) -> None:
     result = parse_file(FIXTURES / name)

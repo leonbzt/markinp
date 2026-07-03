@@ -164,6 +164,13 @@ def build(
     comment_col: Annotated[
         str | None, typer.Option("--comment-col", help="Column to write as /* comment */.")
     ] = None,
+    data_type: Annotated[
+        str | None,
+        typer.Option(
+            "--data-type",
+            help="live_recapture (default) or occupancy (missing surveys become '.').",
+        ),
+    ] = None,
     collapse: Annotated[
         bool, typer.Option("--collapse/--no-collapse", help="Aggregate identical histories.")
     ] = True,
@@ -172,6 +179,9 @@ def build(
     ] = False,
 ) -> None:
     """Build a valid, deterministic .inp file from a tidy capture table."""
+    dtype = _parse_data_type(data_type) or DataType.LIVE_RECAPTURE
+    if dtype not in {DataType.LIVE_RECAPTURE, DataType.OCCUPANCY}:
+        raise typer.BadParameter("build supports only --data-type live_recapture or occupancy")
     opts = BuildOptions(
         fmt=fmt,
         id_col=id_col,
@@ -182,6 +192,7 @@ def build(
         covariate_cols=[c.strip() for c in covariate_cols.split(",")] if covariate_cols else [],
         comment_col=comment_col,
         collapse=collapse,
+        data_type=dtype,
     )
     result = build_file(input_csv, opts)
     diagnostics: list[Diagnostic] = list(result.diagnostics)

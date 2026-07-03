@@ -168,8 +168,9 @@ Highlights:
 | MK002 | History length differs between records |
 | MK004 | Wrong number of frequency columns for the group count |
 | MK007 | Missing / non-numeric covariate |
-| MK011 | All-zero history (warning) |
+| MK011 | All-zero history (warning; not flagged for occupancy) |
 | MK012 | Negative frequency — loss on capture (warning) |
+| MK021 | Occupancy history is all `.` — site never surveyed (warning) |
 | MK900 | Specialized format detected; only partially validated (info) |
 
 `--strict` promotes warnings to errors. Exit code is `0` when there are no
@@ -177,11 +178,16 @@ errors and `1` otherwise.
 
 ## Scope
 
-v0 fully supports the **standard 0/1 encounter-history format** (live recapture /
-CJS / Jolly-Seber / closed captures). Known-fate, dead-recovery (Brownie), and
-multistrata formats are **detected and structurally checked only** (see `MK900`);
-full support is a later milestone. `markinp` will always tell you honestly when
-it can only partially validate a file.
+`markinp` fully supports the **standard 0/1 encounter-history format** (live
+recapture / CJS / Jolly-Seber / closed captures) and the **occupancy /
+detection-history format** (0/1 plus `.` for a not-surveyed occasion, as used by
+MARK, `unmarked`, and PRESENCE). For occupancy it treats an all-zero site as
+valid data, flags an all-`.` site (`MK021`), and can build an occupancy `.inp`
+from a tidy site × survey CSV (`--data-type occupancy`) without ever mistaking a
+missing survey for a non-detection. Known-fate, dead-recovery (Brownie),
+multistrata, and other multi-state formats are **detected and structurally
+checked only** (see `MK900`); full support is a later milestone. `markinp` will
+always tell you honestly when it can only partially validate a file.
 
 ## Development
 
@@ -207,9 +213,10 @@ markinp inspect path/to/one.inp       # summarize inferred structure
 A local `sample_data/` folder of third-party MARK example files is **not** part
 of this repository (licensing), but is handy as a regression corpus — running
 `markinp validate sample_data/*.inp` over it is a quick way to smoke-test a
-change against a wide variety of real files. Note that occupancy, false-positive,
-robust-design, and multistrata files are outside v0's standard-format scope and
-will be flagged accordingly (see [`docs/error-codes.md`](docs/error-codes.md)).
+change against a wide variety of real files. Note that false-positive,
+robust-design, and multistrata files are outside markinp's fully-supported scope
+(standard 0/1 and occupancy) and will be flagged accordingly (see
+[`docs/error-codes.md`](docs/error-codes.md)).
 
 ## Citation
 

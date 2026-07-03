@@ -172,7 +172,7 @@ W=warning, I=info. `--strict` promotes W→E.
 | MK008 | E | File has no encounter records | The file is empty or all comments; add data |
 | MK009 | E | Unterminated `/* ... */` comment | Close the comment with `*/` |
 | MK010 | E | History length ≠ asserted `--occasions` | Expected X occasions but found Y on line N |
-| MK011 | W | All-zero history present | An all-zero history is usually invalid for this model; verify |
+| MK011 | W | All-zero history present (not flagged for occupancy, where it is valid) | An all-zero history is usually invalid for this model; verify |
 | MK012 | W | Negative frequency (losses on capture) | Valid only as a loss-on-capture; confirm this is intended |
 | MK013 | I | Identical histories not collapsed | These rows could be aggregated with a frequency count |
 | MK014 | E | Non-integer frequency (e.g. `1.5`) | Frequencies must be integers |
@@ -182,7 +182,8 @@ W=warning, I=info. `--strict` promotes W→E.
 | MK018 | E | Odd column count for LDLD pairing | (known-fate/recovery) histories must be in Live/Dead pairs |
 | MK019 | W | A declared group has all-zero frequencies | Group G has no individuals; check group setup |
 | MK020 | W | Unexpected encoding / BOM / non-ASCII | Save as UTF-8 or ASCII; a BOM/odd byte was found |
-| MK900 | I | Partial support: specialized format detected (multistrata, or a non-`0`/`1` alphabet — occupancy/false-positive/robust-design) | Full validation of this format is not yet implemented |
+| MK021 | W | Occupancy history is all `.` (site never surveyed) | Contributes nothing to the model; remove it or restore lost survey data |
+| MK900 | I | Partial support: specialized format detected (multistrata, or a non-`0`/`1`/`.` alphabet — false-positive/robust-design) | Full validation of this format is not yet implemented |
 
 Add new codes here **before** implementing them.
 
@@ -269,12 +270,18 @@ Add new codes here **before** implementing them.
   **Release step:** on each version bump, copy the new wheel into `docs/` and
   update `WHEEL_FILE` + the pythonhosted fallback URL in `validator.html` (and
   delete the old wheel).
-- **v0.3 (short–mid term, prioritized) — Occupancy.** First-class support for the
-  occupancy / detection-history format used by the `unmarked` (R) and PRESENCE
-  community — a larger and faster-growing audience than pure capture-recapture
-  (driven by camera traps, eDNA, bioacoustics). Detect `.` (not-surveyed) and
-  multi-state detections, validate structurally, and build from a tidy CSV. This
-  is a committed direction, not a "maybe".
+- **Shipped (v0.3) — Occupancy.** First-class support for the occupancy /
+  detection-history format used by the `unmarked` (R) and PRESENCE community — a
+  larger and faster-growing audience than pure capture-recapture (driven by
+  camera traps, eDNA, bioacoustics). `.` (not-surveyed) is a legal history
+  character (`DataType.OCCUPANCY`, inferred from a `0`/`1`/`.` alphabet); an
+  all-`.` site is flagged (MK021); an all-`0` site is *not* flagged (it is valid,
+  informative occupancy data — MK011 is suppressed); and `markinp build
+  --data-type occupancy` maps a missing survey cell to `.` rather than silently
+  to `0`. **Follow-up at next PyPI release:** add an `occupancy` option to the web
+  validator's data-type dropdown when the bundled wheel is bumped to ≥0.3.0
+  (older wheels reject the value). Multi-state / false-positive detections remain
+  out of scope (still reported honestly via MK900).
 - **v1 — Output tidier.** Parse MARK results into tidy tables (real/beta
   estimates, model list, AICc). Higher-uncertainty parsing; scope after v0.
 - **v1 — `convert`.** Round-trip `.inp` ⇄ tidy CSV, including an RMark-style

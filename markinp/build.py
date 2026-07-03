@@ -40,6 +40,7 @@ class BuildOptions:
     covariate_cols: list[str] = field(default_factory=list)
     comment_col: str | None = None
     collapse: bool = True
+    data_type: DataType = DataType.LIVE_RECAPTURE
 
 
 @dataclass
@@ -72,9 +73,19 @@ def _detect_format(header: list[str], opts: BuildOptions) -> str:
     return "wide"
 
 
-def _normalize_detection(value: str, line: int) -> tuple[str, Diagnostic | None]:
-    """Map a detection cell to '0'/'1', or report an illegal value."""
+def _normalize_detection(
+    value: str, line: int, *, occupancy: bool = False
+) -> tuple[str, Diagnostic | None]:
+    """Map a detection cell to '0'/'1' (or '.' for a not-surveyed occupancy cell).
+
+    For occupancy data a missing cell (blank, ``NA``, ``.``, ...) means *the site
+    was not surveyed on that occasion* — a distinct outcome from a recorded
+    non-detection. We must never collapse the two, so a missing occupancy cell
+    becomes ``.`` rather than being silently reinterpreted as ``0``.
+    """
     token = value.strip().lower()
+    if occupancy and is_missing_marker(token):
+        return ".", None
     if token in _TRUE:
         return "1", None
     if token in _FALSE:
@@ -143,6 +154,7 @@ def _read_wide(
     individuals: list[_Individual] = []
     reserved = _reserved_columns(opts)
     occasion_cols = [] if opts.history_col else _occasion_columns(rows, header, reserved)
+    occupancy = opts.data_type == DataType.OCCUPANCY
 
     for i, row in enumerate(rows):
         line = i + 2  # +1 header, +1 to 1-based
@@ -151,7 +163,7 @@ def _read_wide(
         else:
             chars: list[str] = []
             for col in occasion_cols:
-                char, diag = _normalize_detection(row.get(col) or "", line)
+                char, diag = _normalize_detection(row.get(col) or "", line, occupancy=occupancy)
                 if diag:
                     diagnostics.append(diag)
                 chars.append(char)
@@ -173,6 +185,7 @@ def _read_long(
     id_col = opts.id_col
     occ_col = opts.occasion_col
     det_col = opts.detect_col
+    occupancy = opts.data_type == DataType.OCCUPANCY
 
     # Preserve first-seen order of individuals.
     order: list[str] = []
@@ -191,7 +204,7 @@ def _read_long(
         entries.sort(key=lambda e: _occasion_key(e[0]))
         chars: list[str] = []
         for _occ_value, row, line in entries:
-            char, diag = _normalize_detection(row.get(det_col) or "", line)
+            char, diag = _normalize_detection(row.get(det_col) or "", line, occupancy=occupancy)
             if diag:
                 diagnostics.append(diag)
             chars.append(char)
@@ -285,7 +298,7 @@ def _assemble(individuals: list[_Individual], opts: BuildOptions) -> Dataset:
         n_covariates=n_covariates,
         group_labels=group_labels,
         cov_labels=cov_labels,
-        data_type=DataType.LIVE_RECAPTURE,
+        data_type=opts.data_type,
         records=records,
     )
 

@@ -216,6 +216,16 @@ def mk020_encoding(message: str, hint: str, line: int | None = None) -> Diagnost
     return _warn("MK020", message, hint, line)
 
 
+def mk021_all_missing_history(line: int) -> Diagnostic:
+    return _warn(
+        "MK021",
+        "history is all '.' (this site was never surveyed)",
+        "A history of only not-surveyed occasions contributes nothing to an "
+        "occupancy model; remove the record or check for lost survey data",
+        line,
+    )
+
+
 def mk900_partial_support(data_type: str) -> Diagnostic:
     return _info(
         "MK900",
@@ -231,7 +241,7 @@ def mk900_nonstandard_alphabet(chars: list[str]) -> Diagnostic:
     return _info(
         "MK900",
         f"histories use characters beyond the standard 0/1 (found: {shown})",
-        "This looks like a specialised format (e.g. occupancy, false-positive, or "
+        "This looks like a specialised format (e.g. false-positive occupancy or "
         "robust design) that markinp only checks structurally; the encounter "
         "characters are not validated. Pass --data-type live_recapture to enforce "
         "strict 0/1 checking instead",

@@ -16,7 +16,7 @@ markinp validate FILE.inp [FILE.inp ...] [options]
 | `--groups N` | Assert the expected number of groups |
 | `--occasions N` | Assert the expected history length |
 | `--covariates N` | Assert the expected covariate count |
-| `--data-type TYPE` | Hint the data type (`live_recapture`, `closed_captures`, `known_fate`, `dead_recovery`, `multistrata`) |
+| `--data-type TYPE` | Hint the data type (`live_recapture`, `closed_captures`, `occupancy`, `known_fate`, `dead_recovery`, `multistrata`) |
 | `--strict` | Treat warnings as errors |
 | `--json` | Emit machine-readable JSON |
 
@@ -56,6 +56,7 @@ markinp build INPUT.csv -o OUTPUT.inp [options]
 | `--group-col NAME` | Column defining groups |
 | `--covariate-cols A,B,...` | Comma-separated covariate columns |
 | `--comment-col NAME` | Column written as `/* value */` per record |
+| `--data-type TYPE` | `live_recapture` (default) or `occupancy` |
 | `--collapse / --no-collapse` | Aggregate identical histories (default: on) |
 | `--json` | Emit a build report |
 
@@ -91,6 +92,26 @@ A1,1,0,1,M,10.2
 ```bash
 markinp build captures.csv -o out.inp --format wide \
     --group-col sex --covariate-cols weight
+```
+
+### Occupancy format
+
+For occupancy / detection-history data, pass `--data-type occupancy`. A blank or
+`NA` detection cell is written as `.` (**not surveyed**) instead of `0`, so a
+missing survey is never mistaken for a non-detection:
+
+```
+site,survey,detected,elev
+A,1,1,120
+A,2,0,120
+A,3,,120      # not surveyed -> '.'
+```
+
+```bash
+markinp build sites.csv -o out.inp --data-type occupancy \
+    --id-col site --occasion-col survey --detect-col detected \
+    --covariate-cols elev
+# site A -> history "10."
 ```
 
 ## Use as a library

@@ -176,11 +176,12 @@ def infer_data_type(records: list[EncounterHistory]) -> DataType:
 
     - Histories using only ``0``/``1`` are read as the standard live-recapture
       format.
+    - Histories that add only ``.`` (a not-surveyed occasion) to the ``0``/``1``
+      alphabet are read as occupancy / detection-history data.
     - Histories containing letters are read as multistrata.
-    - Histories using other non-standard characters (e.g. ``.`` for a
-      not-surveyed occasion, or ``2`` for a certain detection) belong to a
-      specialised format markinp does not fully support (occupancy,
-      false-positive occupancy, robust design, ...); these are reported as
+    - Histories using any other non-standard character (e.g. ``2`` for a certain
+      detection) belong to a specialised format markinp does not fully support
+      (false-positive occupancy, robust design, ...); these are reported as
       ``UNKNOWN`` so validation can flag them honestly rather than drowning the
       user in per-character errors.
 
@@ -195,6 +196,8 @@ def infer_data_type(records: list[EncounterHistory]) -> DataType:
         return DataType.LIVE_RECAPTURE
     if nonstandard & _ASCII_LETTERS:
         return DataType.MULTISTRATA
+    if nonstandard <= {"."}:
+        return DataType.OCCUPANCY
     return DataType.UNKNOWN
 
 

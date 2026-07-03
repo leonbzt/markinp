@@ -13,6 +13,7 @@ VALID_FILES = [
     "valid_multi_group.inp",
     "valid_covariates.inp",
     "valid_comments.inp",
+    "occupancy.inp",
 ]
 
 

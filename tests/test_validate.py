@@ -109,8 +109,9 @@ def test_mk900_partial_support_multistrata() -> None:
 
 
 def test_mk900_nonstandard_alphabet_by_default() -> None:
-    # An occupancy-style file with '.' is detected as a non-standard alphabet and
-    # reported once as MK900 rather than a flood of MK005 illegal-character errors.
+    # A file with an unsupported alphabet (here '2', a certain-detection code) is
+    # detected as non-standard and reported once as MK900 rather than a flood of
+    # MK005 illegal-character errors.
     codes = codes_for("nonstandard_alphabet.inp")
     assert "MK900" in codes
     assert "MK005" not in codes
@@ -118,6 +119,28 @@ def test_mk900_nonstandard_alphabet_by_default() -> None:
 
 def test_nonstandard_alphabet_is_strict_when_asserted_standard() -> None:
     codes = codes_for("nonstandard_alphabet.inp", data_type=DataType.LIVE_RECAPTURE)
+    assert "MK005" in codes
+
+
+# --- occupancy (data type with '.' for a not-surveyed occasion) -----------
+
+
+def test_occupancy_file_is_clean() -> None:
+    # 0/1/'.' histories are first-class occupancy data: no MK900, no MK005, and
+    # crucially no MK011 (an all-zero site is valid, informative occupancy data).
+    codes = codes_for("occupancy.inp")
+    assert codes == set()
+
+
+def test_mk021_all_missing_history() -> None:
+    codes = codes_for("occupancy_all_missing.inp")
+    assert "MK021" in codes
+
+
+def test_occupancy_flags_illegal_char_when_asserted() -> None:
+    # Assert occupancy on a file whose alphabet is not 0/1/'.': the stray char
+    # is reported as MK005.
+    codes = codes_for("nonstandard_alphabet.inp", data_type=DataType.OCCUPANCY)
     assert "MK005" in codes
 
 
