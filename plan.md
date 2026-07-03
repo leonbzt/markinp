@@ -260,7 +260,12 @@ Add new codes here **before** implementing them.
 - **Shipped (v0.2+) — In-browser validator.** A client-side page
   (`docs/validator.html`) that runs the library in the browser via Pyodide/WASM.
   Zero install, no server, data stays on the user's device. Reuses
-  `parse`/`validate`/`report` unchanged (see CLAUDE.md rule 9).
+  `parse`/`validate`/`report` unchanged (see CLAUDE.md rule 9). The `markinp`
+  wheel is served **same-origin** from `docs/` (installing by PyPI name triggers
+  a cross-origin fetch from `files.pythonhosted.org` that breaks micropip in the
+  browser). **Release step:** on each version bump, copy the new wheel into
+  `docs/` and update `WHEEL_FILE` + the pythonhosted fallback URL in
+  `validator.html` (and delete the old wheel).
 - **v0.3 (short–mid term, prioritized) — Occupancy.** First-class support for the
   occupancy / detection-history format used by the `unmarked` (R) and PRESENCE
   community — a larger and faster-growing audience than pure capture-recapture
