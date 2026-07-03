@@ -261,11 +261,14 @@ Add new codes here **before** implementing them.
   (`docs/validator.html`) that runs the library in the browser via Pyodide/WASM.
   Zero install, no server, data stays on the user's device. Reuses
   `parse`/`validate`/`report` unchanged (see CLAUDE.md rule 9). The `markinp`
-  wheel is served **same-origin** from `docs/` (installing by PyPI name triggers
-  a cross-origin fetch from `files.pythonhosted.org` that breaks micropip in the
-  browser). **Release step:** on each version bump, copy the new wheel into
-  `docs/` and update `WHEEL_FILE` + the pythonhosted fallback URL in
-  `validator.html` (and delete the old wheel).
+  wheel is served **same-origin** from `docs/` and installed by fetching and
+  unzipping it onto `sys.path` — we bypass micropip entirely because its
+  `deps=False` install path is broken in the current Pyodide build ("attempted
+  to install wheel before downloading it"). markinp is pure Python with no
+  third-party runtime deps, so unzipping the wheel is a complete install.
+  **Release step:** on each version bump, copy the new wheel into `docs/` and
+  update `WHEEL_FILE` + the pythonhosted fallback URL in `validator.html` (and
+  delete the old wheel).
 - **v0.3 (short–mid term, prioritized) — Occupancy.** First-class support for the
   occupancy / detection-history format used by the `unmarked` (R) and PRESENCE
   community — a larger and faster-growing audience than pure capture-recapture

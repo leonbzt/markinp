@@ -191,16 +191,32 @@ async function boot() {
     setStatus("Loading Python runtime…", true);
     pyodide = await loadPyodide();
     setStatus("Installing markinp…", true);
-    await pyodide.loadPackage("micropip");
-    // Prefer the same-origin wheel (avoids CORS/preflight issues that break
-    // micropip's PyPI-name resolution in the browser); fall back to pythonhosted.
+    // Install the wheel by fetching and unzipping it onto sys.path directly.
+    // We deliberately avoid micropip: its deps=False install path is broken in
+    // this Pyodide build ("attempted to install wheel before downloading it").
+    // markinp is pure Python with no third-party runtime deps, so unzipping the
+    // wheel is a complete, dependency-free install. Prefer the same-origin copy;
+    // fall back to the pinned pythonhosted wheel.
     const localWheel = new URL(WHEEL_FILE, document.baseURI).href;
     await pyodide.runPythonAsync(
-      "import micropip\n" +
+      "import sys, io, os, zipfile\n" +
+      "from pyodide.http import pyfetch\n" +
+      "_TARGET = '/wheels'\n" +
+      "async def _install_wheel(url):\n" +
+      "    resp = await pyfetch(url)\n" +
+      "    if resp.status >= 400:\n" +
+      "        raise RuntimeError('HTTP %d fetching %s' % (resp.status, url))\n" +
+      "    data = await resp.bytes()\n" +
+      "    os.makedirs(_TARGET, exist_ok=True)\n" +
+      "    with zipfile.ZipFile(io.BytesIO(data)) as z:\n" +
+      "        z.extractall(_TARGET)\n" +
+      "    if _TARGET not in sys.path:\n" +
+      "        sys.path.insert(0, _TARGET)\n" +
       "try:\n" +
-      "    await micropip.install(" + JSON.stringify(localWheel) + ", deps=False)\n" +
+      "    await _install_wheel(" + JSON.stringify(localWheel) + ")\n" +
       "except Exception:\n" +
-      "    await micropip.install(" + JSON.stringify(PYPI_WHEEL) + ", deps=False)\n"
+      "    await _install_wheel(" + JSON.stringify(PYPI_WHEEL) + ")\n" +
+      "import markinp  # fail fast if the wheel did not land\n"
     );
     pyodide.runPython(PY_GLUE);
     setStatus("Ready. ✅", false);
