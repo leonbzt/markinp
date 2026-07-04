@@ -8,7 +8,8 @@ authors:
     email: leon.botzenhardt@gmail.com
     orcid: "https://orcid.org/0009-0002-8584-583X"
     affiliation: "Ludwig-Maximilians-Universität München (LMU Munich)"
-version: 0.2.0
+version: 0.3.0
+date-released: 2026-07-04
 doi: 10.5281/zenodo.21145090
 license: MIT
 repository-code: "https://github.com/leonbzt/markinp"
@@ -18,8 +19,8 @@ identifiers:
     value: 10.5281/zenodo.21145090
     description: "Concept DOI — always resolves to the latest version"
   - type: doi
-    value: 10.5281/zenodo.21145091
-    description: "Version DOI for markinp v0.2.0"
+    value: 10.5281/zenodo.21193239
+    description: "Version DOI for markinp v0.3.0"
 keywords:
   - capture-recapture
   - mark-recapture
