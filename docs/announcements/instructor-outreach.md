@@ -14,6 +14,21 @@ specific, and generous (you're saving them time, not selling).
 - Authors of recent papers that used Program MARK or RMark (find them via Google
   Scholar; email 5–10 whose work is close to your own).
 
+**Concrete contacts & links**
+
+- **Evan Cooch** — maintainer of the *Gentle Introduction to MARK* and phidot.org;
+  Cornell Dept. of Natural Resources & the Environment.
+  `evan.cooch@cornell.edu` · <https://dnr.cals.cornell.edu/people/evan-cooch>
+- **Gary White** — author of Program MARK, Colorado State University.
+  <https://sites.warnercnr.colostate.edu/gwhite/>
+- **Jeff Laake** — author of RMark. <https://github.com/jlaake/RMark>
+- **unmarked mailing list (Google Group)** — the R `unmarked` / occupancy
+  community; the single best-fit list now that markinp validates occupancy files.
+  <https://groups.google.com/g/unmarked>
+- **ECOLOG-L (ESA listserv)** — broad ecology reach. Subscribe:
+  <https://esa.org/membership/ecolog/> · post to `ecolog-l@community.esa.org`.
+- **R-sig-ecology** — <https://stat.ethz.ch/mailman/listinfo/r-sig-ecology>.
+
 ---
 
 ## Template A — workshop instructor

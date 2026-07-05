@@ -5,10 +5,15 @@ title/emphasis to the venue.
 
 **Where to submit (both are bullseye audiences):**
 
-- **EURING Analytical Meeting** — biennial, the field's capture–recapture
-  methods meeting; a MARK-heavy audience. Talks, posters, and workshops.
-- **ISEC (International Statistical Ecology Conference)** — biennial; speed talks
-  and posters; strong capture–recapture track.
+- **EURING Analytical Meeting** — the field's capture–recapture methods meeting
+  (roughly every 3 years); a MARK-heavy audience. Talks, posters, workshops.
+  Meetings hub: <https://euring.org/meetings/> ·
+  analytical meetings: <https://euring.org/meetings/analytical-meetings>
+  (last: Montpellier, 2023 — watch the page for the next call).
+- **ISEC (International Statistical Ecology Conference)** — <https://statisticalecology.org/>.
+  **ISEC 2027: Mérida, México** (workshops 8–9 Jan, conference 10–15 Jan 2027);
+  strong capture–recapture *and* occupancy/`unmarked` track. Announcements: X
+  [@ISEC_stats_ecol](https://x.com/isec_stats_ecol) and the unmarked group.
 - Also consider **The Wildlife Society (TWS)** annual conference and **ESA**
   (Ecological Society of America) for broader reach.
 
